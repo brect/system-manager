@@ -1,39 +1,53 @@
 # system-manager
 
 
-# Telemetria
+# Painel de Monitoria
 
-* Verificar se a abertura do app vem após ter um crash;
+## 1. Memória e Armazenamento:
+   RAM: Memória RAM total do dispositivo, memória RAM disponível, limite de uso de memória, indicador se a memória RAM está baixa, total de mΩemória RAM utilizada
+   Armazenamento Interno: Tipo (eMMC, UFS) e capacidade de armazenamento interno.
+   Armazenamento Externo: Tipo (microSD, USB OTG) e capacidade de armazenamento externo disponível.
 
-* Nível de bateria;
+## 2. CPU e Processamento:
+   Nome do Chipset e Fabricante: Identificação do processador.
+   Núcleos: Número de núcleos da CPU.
+   Taxa Máxima de Clock: Frequência máxima da CPU.
+   Processo: Tecnologia de fabricação.
+   Nome da GPU e Núcleos: Especificações da unidade gráfica.
 
-* Verificar conexões (https://developer.android.com/reference/android/net/NetworkCapabilities):
-    * Wifi
-    * Dados
+## 3. Bateria:
+   Capacidade: Total em mAh.
+   Integridade: Estado geral da bateria.
+   Nível: Percentual de carga atual.
+   Status: Condição atual (carregando, descarregada).
+   Fonte de Alimentação: Tipo de energia conectada.
+   Tecnologia: Tipo de bateria (Li-ion, Li-Po).
+   Temperatura: Temperatura da bateria.
+   Tensão: Voltagem atual.
 
-* Verificar CPU;
+## 4. Sistema Operacional:
+   SO: Nome e versão do sistema operacional.
+   Número da Compilação: Identificador da versão.
+   Multitarefa: Capacidades do sistema em termos de gerenciamento de processos.
+   Informações do Kernel: Versão do kernel e detalhes.
 
-* Verificar Memoria Ram;
+## 5. Rede:
+   Interface de Rede: Tipo de conexão (Wi-Fi, Ethernet).
+   Velocidade do Link: Taxa de conexão.
+   Frequência da Rede: Frequência usada pela conexão (2.4 GHz, 5 GHz).
 
-* Verificar uso de grafico e animações do app;
+## 6. Exibição:
+   Resolução e Densidade: Resolução da tela e PPI.
+   Tamanho Físico: Dimensões da tela em polegadas.
+   Taxas de Atualização Suportadas: e.g., 60 Hz, 120 Hz.
+   Brilho: Configurações de brilho (automático, manual).
+   Tempo Limite da Tela: Duração antes de o display desligar.
 
-* Verificar espaço de armazenamento;
-
-* Continuar com problemas: Recomendamos limpar o cache do app. Para isso “clique aqui” e selecione Limpar dados
-
-Colocar o envio de informações para o crashlytics, como nofatal erros
-https://www.youtube.com/watch?v=01hE7Pcfy5A
-
-
-
-## Monitoring Internet Connection
-
-https://www.google.com/search?q=networkcapabilities+android&sca_esv=c68dc20e9e46e037&rlz=1C5CHFA_enBR941BR941&sxsrf=ADLYWIKda0NpZdadrgx6nwIA_l9OivDloA:1725927800270&ei=eJHfZrOXEI_K1sQPjKjo8Ao&start=10&sa=N&sstk=Aagrsui052AsEcmc8vlHFdHXA9tTpYQAlRU5L0nhOR3UpRi75fLIMSPDSfa4wSravnX4BlXoVWd0zlD3BqHWmGF1zE-S4trntIFE1g&ved=2ahUKEwizs8WLjreIAxUPpZUCHQwUGq4Q8tMDegQIBBAE&biw=1792&bih=872&dpr=1
-
-https://developer.android.com/reference/android/net/NetworkCapabilities
-
-https://medium.com/@veniamin.vynohradov/monitoring-internet-connection-state-in-android-da7ad915b5e5
-
-https://medium.com/@meytataliti/obtaining-network-connection-info-with-flow-in-android-af2e6b760dfd
-
-https://developer.android.com/training/monitoring-device-state/connectivity-status-type?hl=pt-br
+## 7. Informações do Dispositivo:
+   Nome e Modelo do Dispositivo: Identificação específica do dispositivo.
+   Fabricante e Marca: Informações sobre o fabricante.
+   Versão do SO.
+   Versão do SDK.
+   Tipo de Display.
+   Chip/Hardware.
+   Placa: Detalhes sobre a placa-mãe.
