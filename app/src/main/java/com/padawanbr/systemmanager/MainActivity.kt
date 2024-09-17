@@ -1,8 +1,6 @@
 package com.padawanbr.systemmanager
 
-import android.app.ActivityManager
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,12 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.padawanbr.systemmanager.managers.DeviceBateryManager
+import com.padawanbr.systemmanager.managers.DeviceInfoManager
 import com.padawanbr.systemmanager.managers.MemoryManager
 import com.padawanbr.systemmanager.ui.theme.SystemManagerTheme
 
 class MainActivity : ComponentActivity() {
 
   val memoryManager by lazy { MemoryManager(this) }
+  val deviceInfoManager =  DeviceInfoManager()
+  val deviceBateryManager =  DeviceBateryManager(this)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -39,6 +41,9 @@ class MainActivity : ComponentActivity() {
     super.onResume()
     memoryManager.subscribe()
     memoryManager.runCheckerMemory()
+
+    deviceInfoManager.deviceInfo()
+    deviceBateryManager.logBateryInfo()
   }
 }
 
