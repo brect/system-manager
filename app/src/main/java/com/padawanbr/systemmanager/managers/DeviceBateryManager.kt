@@ -99,5 +99,4 @@ class DeviceBateryManager(val context: Context) {
       0.0
     }
   }
-
 }

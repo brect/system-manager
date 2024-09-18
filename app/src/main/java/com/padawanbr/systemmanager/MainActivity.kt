@@ -15,14 +15,16 @@ import com.padawanbr.systemmanager.managers.DeviceBateryManager
 import com.padawanbr.systemmanager.managers.DeviceInfoManager
 import com.padawanbr.systemmanager.managers.GpuInfoManager
 import com.padawanbr.systemmanager.managers.MemoryManager
+import com.padawanbr.systemmanager.managers.StorageInfoManager
 import com.padawanbr.systemmanager.ui.theme.SystemManagerTheme
 
 class MainActivity : ComponentActivity() {
 
   val memoryManager by lazy { MemoryManager(this) }
-  val deviceInfoManager =  DeviceInfoManager(this)
-  val deviceBateryManager =  DeviceBateryManager(this)
-  val gpuInfoManager =  GpuInfoManager()
+  val deviceInfoManager = DeviceInfoManager(this)
+  val deviceBateryManager = DeviceBateryManager(this)
+  val gpuInfoManager = GpuInfoManager()
+  val storageInfoManager = StorageInfoManager()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -49,6 +51,8 @@ class MainActivity : ComponentActivity() {
     deviceBateryManager.logBateryInfo()
 
     gpuInfoManager.gpuInfo()
+
+    storageInfoManager.getStorageInfo()
   }
 }
 
