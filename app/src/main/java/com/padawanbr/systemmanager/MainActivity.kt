@@ -19,7 +19,7 @@ import com.padawanbr.systemmanager.ui.theme.SystemManagerTheme
 class MainActivity : ComponentActivity() {
 
   val memoryManager by lazy { MemoryManager(this) }
-  val deviceInfoManager =  DeviceInfoManager()
+  val deviceInfoManager =  DeviceInfoManager(this)
   val deviceBateryManager =  DeviceBateryManager(this)
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
     memoryManager.runCheckerMemory()
 
     deviceInfoManager.deviceInfo()
+    deviceInfoManager.screenInfo()
     deviceBateryManager.logBateryInfo()
   }
 }
