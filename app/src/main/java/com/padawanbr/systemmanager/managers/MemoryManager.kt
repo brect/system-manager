@@ -4,6 +4,8 @@ import android.app.Activity.ACTIVITY_SERVICE
 import android.app.ActivityManager
 import android.content.Context
 import android.util.Log
+import com.padawanbr.systemmanager.model.Item
+import com.padawanbr.systemmanager.model.Manager
 
 
 class MemoryManager(context: Context) {
@@ -14,6 +16,23 @@ class MemoryManager(context: Context) {
 
   fun subscribe() {
     activityManager.getMemoryInfo(memoryInfo)
+  }
+
+  fun memoryInfo(): Manager {
+
+    subscribe()
+
+    val memoryInfo = Manager(
+      title = "Memory Info",
+      items = listOf(
+        Item("TOTAL_MEMORY", "${memoryInfo.totalMem} bytes"),
+        Item("AVAILABLE_MEMORY", "${memoryInfo.availMem} bytes"),
+        Item("TRESHOLD", "${memoryInfo.threshold} bytes"),
+        Item("LOW_MEMORY", "${memoryInfo.lowMemory}"),
+      )
+    )
+
+    return memoryInfo
   }
 
   fun runCheckerMemory() {
