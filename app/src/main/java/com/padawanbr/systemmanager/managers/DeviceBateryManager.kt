@@ -5,8 +5,29 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.util.Log
+import com.padawanbr.systemmanager.model.Item
+import com.padawanbr.systemmanager.model.Manager
 
 class DeviceBateryManager(val context: Context) {
+
+  fun bateryInfo(): Manager {
+    val bateryInfo = Manager(
+      title = "Battery Info",
+      items = listOf(
+        Item(key = "BATTERY_HEALTH", value = getBatteryHealth()),
+        Item(key = "BATTERY_LEVEL", value = "${getBatteryLevel()} %"),
+        Item(key = "BATTERY_STATUS", value = getBatteryStatus()),
+        Item(key = "POWER_SOURCE", value = getPowerSource()),
+        Item(key = "BATTERY_TECHNOLOGY", value = getBatteryTechnology()),
+        Item(key = "BATTERY_TEMPERATURE", value = "${getBatteryTemperature()}°"),
+        Item(key = "BATTERY_VOLTAGE", value = getBatteryVoltage().toString()),
+        Item(key = "BATTERY_CAPACITY", value = getBatteryCapacity().toString()),
+      )
+    )
+
+    return bateryInfo
+
+  }
 
   fun logBateryInfo() {
     Log.i("DeviceBateryManager", "getBatteryHealth: ${getBatteryHealth()}\n")

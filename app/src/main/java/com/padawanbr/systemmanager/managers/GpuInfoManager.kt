@@ -4,6 +4,8 @@ import android.opengl.EGL14
 import android.opengl.EGLConfig
 import android.opengl.GLES20
 import android.util.Log
+import com.padawanbr.systemmanager.model.Item
+import com.padawanbr.systemmanager.model.Manager
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -15,9 +17,20 @@ class GpuInfoManager {
   private var eglContext = EGL14.EGL_NO_CONTEXT
   private var eglSurface = EGL14.EGL_NO_SURFACE
 
+  fun gpuInfo(): Manager {
+    val gpuInfo = Manager(
+      title = "GPU Info",
+      items = listOf(
+        Item(key = "GPU Vendor", value = getGpuVendor()),
+        Item(key = "GPU Renderer", value = getGpuRenderer()),
+        Item(key = "GPU Load", value = getGpuLoad()),
+        Item(key = "ScalingGovernor", value = getScalingGovernor()),
+      )
+    )
+    return gpuInfo
+  }
 
-  fun gpuInfo() : String {
-
+  fun logGpuInfo(): String {
     val gpuVendor = getGpuVendor()
     val gpuRenderer = getGpuRenderer()
     val scalingGovernor = getScalingGovernor()
@@ -31,8 +44,8 @@ class GpuInfoManager {
     Log.i("GpuInfoManager", "gpuInfo: $gpuInfo")
 
     return gpuInfo
-
   }
+
   fun getGpuVendor(): String {
     if (initializeOpenGL()) {
       val vendor = GLES20.glGetString(GLES20.GL_VENDOR) ?: "Desconhecido"
@@ -106,7 +119,8 @@ class GpuInfoManager {
         EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
         EGL14.EGL_NONE
       )
-      eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, EGL14.EGL_NO_CONTEXT, attribListContext, 0)
+      eglContext =
+        EGL14.eglCreateContext(eglDisplay, eglConfig, EGL14.EGL_NO_CONTEXT, attribListContext, 0)
       if (eglContext == EGL14.EGL_NO_CONTEXT) {
         Log.e("GpuInfoManager", "Não foi possível criar o contexto EGL")
         return false
@@ -138,7 +152,12 @@ class GpuInfoManager {
   private fun cleanupOpenGL() {
     try {
       if (eglDisplay != EGL14.EGL_NO_DISPLAY) {
-        EGL14.eglMakeCurrent(eglDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT)
+        EGL14.eglMakeCurrent(
+          eglDisplay,
+          EGL14.EGL_NO_SURFACE,
+          EGL14.EGL_NO_SURFACE,
+          EGL14.EGL_NO_CONTEXT
+        )
         if (eglSurface != EGL14.EGL_NO_SURFACE) {
           EGL14.eglDestroySurface(eglDisplay, eglSurface)
           eglSurface = EGL14.EGL_NO_SURFACE

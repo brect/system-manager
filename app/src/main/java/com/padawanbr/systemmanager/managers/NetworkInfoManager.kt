@@ -56,7 +56,6 @@ class NetworkInfoManager(private val context: Context) {
   }
 
   fun getNetworkInfo(): String {
-
     if (checkAndRequestPermissions()) {
       val connectionType = getConnectionType()
       val networkRate = getNetworkConnectionRate()
@@ -248,3 +247,46 @@ class NetworkInfoManager(private val context: Context) {
     }
   }
 }
+
+
+
+
+//  override fun onRequestPermissionsResult(
+//    requestCode: Int,
+//    permissions: Array<String>,
+//    grantResults: IntArray
+//  ) {
+//    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//    when (requestCode) {
+//      REQUEST_CODE_LOCATION -> {
+//        if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+//          // Permissão concedida, chame o método novamente
+//          val networkQuality = networkInfoManager.getNetworkQuality()
+//          // Atualize a interface do usuário com o resultado
+//        } else {
+//          // Permissão negada, informe ao usuário que a permissão é necessária
+//          Toast.makeText(
+//            this,
+//            "Permissão de localização é necessária para obter a qualidade da rede.",
+//            Toast.LENGTH_SHORT
+//          ).show()
+//        }
+//      }
+//
+//      REQUEST_CODE_PHONE_STATE -> {
+//        if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+//          // Permissão concedida, chame os métodos novamente
+//          val carrierName = networkInfoManager.getCarrierName()
+//          val mobileNetworkType = networkInfoManager.getMobileNetworkType()
+//          // Atualize a interface do usuário com o resultado
+//        } else {
+//          // Permissão negada, informe ao usuário que a permissão é necessária
+//          Toast.makeText(
+//            this,
+//            "Permissão de estado do telefone é necessária para obter informações da operadora.",
+//            Toast.LENGTH_SHORT
+//          ).show()
+//        }
+//      }
+//    }
+//  }

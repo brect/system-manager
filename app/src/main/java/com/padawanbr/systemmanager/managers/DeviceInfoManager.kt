@@ -7,17 +7,16 @@ import android.util.Log
 import android.view.WindowManager
 import com.padawanbr.systemmanager.model.Item
 import com.padawanbr.systemmanager.model.Manager
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class DeviceInfoManager(private val context: Context? = null) {
+class DeviceInfoManager(private val context: Context) {
 
   fun deviceInfo(): Manager {
     val deviceInfo = Manager(
       title = "Device Info",
       items = listOf(
+        Item("DEVICE ID", "IMPLEMENTAR"),
         Item("MODELO", Build.MODEL),
         Item("FABRICANTE", Build.MANUFACTURER),
         Item("HARDWARE", Build.HARDWARE),
@@ -35,30 +34,35 @@ class DeviceInfoManager(private val context: Context? = null) {
     return deviceInfo
   }
 
-//  fun screenInfo(): String {
-//    val displayMetrics = context.resources.displayMetrics
-//    val widthPixels = displayMetrics.widthPixels
-//    val heightPixels = displayMetrics.heightPixels
-//    val densityDpi = displayMetrics.densityDpi
-//    val density = displayMetrics.density
-//    val xdpi = displayMetrics.xdpi
-//    val ydpi = displayMetrics.ydpi
-//
-//    val display = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
-//    val refreshRate = display.refreshRate
-//
-//    val screenSizeInches = getScreenSize(widthPixels, xdpi, heightPixels, ydpi)
-//
-//    val screenInfos = "RESOLUÇÃO TELA: ${widthPixels} x ${heightPixels} pixels\n" +
-//        "DENSIDADE DPI: ${densityDpi} dpi\n" +
-//        "DENSIDADE: ${density}\n" +
-//        "TAMANHO EM POLEGADAS: ${"%.2f".format(screenSizeInches)} polegadas\n" +
-//        "REFRESH RATE: ${refreshRate} Hz\n"
-//
-//    Log.i("SystemDeviceManager", "screen info: ${screenInfos}")
-//
-//    return screenInfos
-//  }
+  fun screenInfo(): Manager {
+    val displayMetrics = context.resources.displayMetrics
+    val widthPixels = displayMetrics.widthPixels
+    val heightPixels = displayMetrics.heightPixels
+    val densityDpi = displayMetrics.densityDpi
+    val density = displayMetrics.density
+    val xdpi = displayMetrics.xdpi
+    val ydpi = displayMetrics.ydpi
+
+    val display = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
+    val refreshRate = display.refreshRate
+
+    val screenSizeInches = getScreenSize(widthPixels, xdpi, heightPixels, ydpi)
+
+    val screenInfos = Manager(
+      title = "Screen Info",
+      items = listOf(
+        Item("RESOLUÇÃO TELA", "${widthPixels} x ${heightPixels} pixels"),
+        Item("DENSIDADE DPI", "${densityDpi} dpi"),
+        Item("DENSIDADE", "$density"),
+        Item("TAMANHO EM POLEGADAS", "${"%.2f".format(screenSizeInches)} polegadas"),
+        Item("REFRESH RATE", "${refreshRate} Hz")
+      )
+    )
+
+    Log.i("SystemDeviceManager", "screen info: ${screenInfos}")
+
+    return screenInfos
+  }
 
   private fun getScreenSize(
     widthPixels: Int,

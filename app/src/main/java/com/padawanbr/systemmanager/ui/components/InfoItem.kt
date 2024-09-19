@@ -17,14 +17,14 @@ fun InfoItem(item: Item) {
     Text(
       modifier = Modifier,
       text = "${item.key}: ",
-      fontSize = 16.sp,
+      fontSize = 12.sp,
       color = Color.Black,
-      fontWeight = FontWeight.Normal
+      fontWeight = FontWeight.Bold
     )
     Text(
       modifier = Modifier,
       text = item.value,
-      fontSize = 16.sp,
+      fontSize = 12.sp,
       color = Color.Black,
       fontWeight = FontWeight.Normal
     )

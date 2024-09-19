@@ -4,29 +4,34 @@ import android.os.Build
 import android.os.Environment
 import android.os.StatFs
 import android.util.Log
+import com.padawanbr.systemmanager.model.Item
+import com.padawanbr.systemmanager.model.Manager
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 
 class StorageInfoManager {
 
-  fun getStorageInfo() {
-    getInternalStorageInfo()
-//    getExternalStorageInfo()
-//    getStorageHardwareInfo()
-  }
-
-  fun getInternalStorageInfo(): String {
+  fun getInternalStorageInfo(): Manager {
     val internalStorageType = getInternalStorageType()
     val internalStorageTotal = getTotalInternalStorageSize()
     val internalStorageAvailable = getAvailableInternalStorageSize()
 
-    val internalInfo = "Armazenamento Interno:\n" +
-        "Sistema de Arquivos: $internalStorageType\n" +
-        "Capacidade Total: ${formatSize(internalStorageTotal)}\n" +
-        "Espaço Disponível: ${formatSize(internalStorageAvailable)}\n"
+//    val internalInfo = "Armazenamento Interno:\n" +
+//        "Sistema de Arquivos: $internalStorageType\n" +
+//        "Capacidade Total: ${formatSize(internalStorageTotal)}\n" +
+//        "Espaço Disponível: ${formatSize(internalStorageAvailable)}\n"
 
-    Log.i("StorageInfoManager", internalInfo)
+    val internalInfo = Manager(
+      title = "Storage Info",
+      items = listOf(
+        Item(key = "STORAGE", value = "Internal Storage"),
+        Item(key = "INTERNAL STORAGE TYPE", value = internalStorageType),
+        Item(key = "INTERNAL STORAGE TOTAL", value = formatSize(internalStorageTotal)),
+        Item(key = "INTERNAL STORAGE AVAILABLE", value = formatSize(internalStorageAvailable)),
+      )
+    )
+
     return internalInfo
   }
 

@@ -22,13 +22,28 @@ class MemoryManager(context: Context) {
 
     subscribe()
 
+    val totalMemory = memoryInfo.totalMem // Memória RAM total do dispositivo
+    val availableMemory = memoryInfo.availMem // Memória RAM disponível
+    val threshold = memoryInfo.threshold // Limite de uso de memória
+    val lowMemory = memoryInfo.lowMemory // Indica se a memória RAM está baixa
+    val usedMemory = totalMemory - availableMemory // Memória RAM utilizada
+
     val memoryInfo = Manager(
       title = "Memory Info",
       items = listOf(
-        Item("TOTAL_MEMORY", "${memoryInfo.totalMem} bytes"),
-        Item("AVAILABLE_MEMORY", "${memoryInfo.availMem} bytes"),
-        Item("TRESHOLD", "${memoryInfo.threshold} bytes"),
-        Item("LOW_MEMORY", "${memoryInfo.lowMemory}"),
+        Item("TOTAL_MEMORY", "$totalMemory bytes"),
+        Item("TOTAL_MEMORY", "${bytesToMegabytes(totalMemory)} megabytes"),
+
+        Item("AVAILABLE_MEMORY", "$availableMemory bytes"),
+        Item("AVAILABLE_MEMORY", "${bytesToMegabytes(availableMemory)} megabytes"),
+
+        Item("TRESHOLD", "$threshold bytes"),
+        Item("TRESHOLD", "${bytesToMegabytes(threshold)} megabytes"),
+
+        Item("USED_MEMORY", "$usedMemory bytes"),
+        Item("USED_MEMORY", "${bytesToMegabytes(usedMemory)} megabytes"),
+
+        Item("LOW_MEMORY", "$lowMemory"),
       )
     )
 

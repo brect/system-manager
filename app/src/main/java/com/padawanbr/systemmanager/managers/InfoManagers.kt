@@ -2,25 +2,21 @@ package com.padawanbr.systemmanager.managers
 
 import android.content.Context
 
-class InfoManagers(val context: Context) {
+class InfoManagers(context: Context) {
 
-  val deviceInfoManager = DeviceInfoManager()
-  val memoryManager  = MemoryManager(context)
+  val deviceInfoManager = DeviceInfoManager(context)
+  val memoryManager = MemoryManager(context)
   val deviceBateryManager = DeviceBateryManager(context)
   val gpuInfoManager = GpuInfoManager()
   val storageInfoManager = StorageInfoManager()
 
   val managers = listOf(
     deviceInfoManager.deviceInfo(),
-    memoryManager.memoryInfo()
-//    memoryManager.subscribe()
-//    memoryManager.runCheckerMemory(),
-//    deviceInfoManager.deviceInfo(),
-//    deviceInfoManager.screenInfo(),
-//    deviceBateryManager.logBateryInfo(),
-//    gpuInfoManager.gpuInfo(),
-//    storageInfoManager.getStorageInfo(),
-//
+    deviceInfoManager.screenInfo(),
+    memoryManager.memoryInfo(),
+    deviceBateryManager.bateryInfo(),
+    gpuInfoManager.gpuInfo(),
+    storageInfoManager.getInternalStorageInfo(),
 //    networkInfoManager.getNetworkInfo())
   )
 }
