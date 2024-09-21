@@ -3,6 +3,7 @@ package com.padawanbr.systemmanager.managers
 
 import android.content.Context
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
 import com.padawanbr.systemmanager.model.Item
@@ -16,7 +17,7 @@ class DeviceInfoManager(private val context: Context) {
     val deviceInfo = Manager(
       title = "Device Info",
       items = listOf(
-        Item("DEVICE ID", "IMPLEMENTAR"),
+        Item("DEVICE ID", getAndroidId(context)),
         Item("MODELO", Build.MODEL),
         Item("FABRICANTE", Build.MANUFACTURER),
         Item("HARDWARE", Build.HARDWARE),
@@ -25,13 +26,18 @@ class DeviceInfoManager(private val context: Context) {
         Item("SDK", Build.VERSION.SDK_INT.toString()),
         Item("DISPLAY", Build.DISPLAY),
         Item("HOST", Build.HOST),
-        Item("CPU_ABI2", Build.CPU_ABI2)
+//        Item("CPU_ABI2", Build.CPU_ABI2)
       )
     )
 
     Log.i("SystemDeviceManager", "device info: \n${deviceInfo}")
 
     return deviceInfo
+  }
+
+
+  fun getAndroidId(context: Context): String {
+    return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
   }
 
   fun screenInfo(): Manager {
@@ -55,13 +61,17 @@ class DeviceInfoManager(private val context: Context) {
         Item("DENSIDADE DPI", "${densityDpi} dpi"),
         Item("DENSIDADE", "$density"),
         Item("TAMANHO EM POLEGADAS", "${"%.2f".format(screenSizeInches)} polegadas"),
-        Item("REFRESH RATE", "${refreshRate} Hz")
+        Item("REFRESH RATE", "${floatToString(refreshRate)} Hz")
       )
     )
 
     Log.i("SystemDeviceManager", "screen info: ${screenInfos}")
 
     return screenInfos
+  }
+
+  fun floatToString(value: Float): String {
+    return "%.2f".format(value)
   }
 
   private fun getScreenSize(

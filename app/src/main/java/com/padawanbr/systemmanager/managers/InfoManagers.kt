@@ -9,6 +9,7 @@ class InfoManagers(context: Context) {
   val deviceBateryManager = DeviceBateryManager(context)
   val gpuInfoManager = GpuInfoManager()
   val storageInfoManager = StorageInfoManager()
+  val developerOptionsInfoManager = DeveloperOptionsManager(context)
 
   val managers = listOf(
     deviceInfoManager.deviceInfo(),
@@ -17,6 +18,7 @@ class InfoManagers(context: Context) {
     deviceBateryManager.bateryInfo(),
     gpuInfoManager.gpuInfo(),
     storageInfoManager.getInternalStorageInfo(),
+    developerOptionsInfoManager.developerOptionsInfo(),
 //    networkInfoManager.getNetworkInfo())
   )
 }

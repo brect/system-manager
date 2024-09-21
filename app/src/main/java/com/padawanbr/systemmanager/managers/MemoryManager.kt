@@ -27,57 +27,73 @@ class MemoryManager(context: Context) {
     val threshold = memoryInfo.threshold // Limite de uso de memória
     val lowMemory = memoryInfo.lowMemory // Indica se a memória RAM está baixa
     val usedMemory = totalMemory - availableMemory // Memória RAM utilizada
+    val appMemoryInfo = getAppMemoryInfo() //uso de memória do aplicativo
 
     val memoryInfo = Manager(
-      title = "Memory Info",
+      title = "Informações de Memória",
       items = listOf(
-        Item("TOTAL_MEMORY", "$totalMemory bytes"),
-        Item("TOTAL_MEMORY", "${bytesToMegabytes(totalMemory)} megabytes"),
-
-        Item("AVAILABLE_MEMORY", "$availableMemory bytes"),
-        Item("AVAILABLE_MEMORY", "${bytesToMegabytes(availableMemory)} megabytes"),
-
-        Item("TRESHOLD", "$threshold bytes"),
-        Item("TRESHOLD", "${bytesToMegabytes(threshold)} megabytes"),
-
-        Item("USED_MEMORY", "$usedMemory bytes"),
-        Item("USED_MEMORY", "${bytesToMegabytes(usedMemory)} megabytes"),
-
-        Item("LOW_MEMORY", "$lowMemory"),
+        // Informações gerais
+        Item("TOTAL_MEMORY", "${formatBytesToMB(totalMemory)} MB"),
+        Item("AVAILABLE_MEMORY", "${formatBytesToMB(availableMemory)} MB"),
+        Item("USED_MEMORY", "${formatBytesToMB(usedMemory)} MB"),
+        Item("THRESHOLD", "${formatBytesToMB(threshold)} MB"),
+        Item("LOW_MEMORY", if (lowMemory) "Sim" else "Não"),
+        // Informações do aplicativo
+        Item("APP_TOTAL_PSS", "${formatKBToMB(appMemoryInfo.totalPss)} MB"),
+        Item("APP_DALVIK_PSS", "${formatKBToMB(appMemoryInfo.dalvikPss)} MB"),
+        Item("APP_NATIVE_PSS", "${formatKBToMB(appMemoryInfo.nativePss)} MB"),
+        Item("APP_OTHER_PSS", "${formatKBToMB(appMemoryInfo.otherPss)} MB")
       )
     )
 
     return memoryInfo
   }
 
-  fun runCheckerMemory() {
-    val totalMemory = memoryInfo.totalMem // Memória RAM total do dispositivo
-    val availableMemory = memoryInfo.availMem // Memória RAM disponível
-    val threshold = memoryInfo.threshold // Limite de uso de memória
-    val lowMemory = memoryInfo.lowMemory // Indica se a memória RAM está baixa
-    val usedMemory = totalMemory - availableMemory // Memória RAM utilizada
 
-    Log.i(
-      "SystemMemoryManager",
-      " memoryInfo.totalMemory $totalMemory bytes | ${bytesToMegabytes(totalMemory)} megabytes"
-    )
-    Log.i(
-      "SystemMemoryManager",
-      " memoryInfo.availableMemory $availableMemory bytes | ${bytesToMegabytes(availableMemory)} megabytes"
-    )
-    Log.i(
-      "SystemMemoryManager",
-      " memoryInfo.threshold $threshold bytes | ${bytesToMegabytes(threshold)} megabytes"
-    )
-    Log.i("SystemMemoryManager", " memoryInfo.lowMemory $lowMemory")
-    Log.i(
-      "SystemMemoryManager",
-      " memoryInfo.usedMemory $usedMemory bytes | ${bytesToMegabytes(usedMemory)} megabytes"
-    )
-
+  private fun getAppMemoryInfo(): android.os.Debug.MemoryInfo {
+    val pid = android.os.Process.myPid()
+    val memoryInfos = activityManager.getProcessMemoryInfo(intArrayOf(pid))
+    return memoryInfos[0]
   }
 
-  fun bytesToMegabytes(bytes: Long): Int {
-    return (bytes / (1024L * 1024L)).toInt()
+  fun runCheckerMemory() {
+    subscribe()
+
+    val totalMemory = memoryInfo.totalMem
+    val availableMemory = memoryInfo.availMem
+    val threshold = memoryInfo.threshold
+    val lowMemory = memoryInfo.lowMemory
+    val usedMemory = totalMemory - availableMemory
+
+    Log.i(
+      "SystemMemoryManager",
+      "Total Memory: ${formatBytesToMB(totalMemory)} MB"
+    )
+    Log.i(
+      "SystemMemoryManager",
+      "Available Memory: ${formatBytesToMB(availableMemory)} MB"
+    )
+    Log.i(
+      "SystemMemoryManager",
+      "Used Memory: ${formatBytesToMB(usedMemory)} MB"
+    )
+    Log.i(
+      "SystemMemoryManager",
+      "Threshold: ${formatBytesToMB(threshold)} MB"
+    )
+    Log.i(
+      "SystemMemoryManager",
+      "Low Memory: ${if (lowMemory) "Sim" else "Não"}"
+    )
+  }
+
+  private fun formatBytesToMB(bytes: Long): String {
+    val mb = bytes.toDouble() / (1024 * 1024)
+    return "%.2f".format(mb)
+  }
+
+  private fun formatKBToMB(kb: Int): String {
+    val mb = kb.toDouble() / 1024
+    return "%.2f".format(mb)
   }
 }
