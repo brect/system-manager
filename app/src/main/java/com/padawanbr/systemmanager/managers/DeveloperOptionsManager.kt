@@ -14,6 +14,7 @@ class DeveloperOptionsManager(private val context: Context) {
     val developerOptions = Manager(
       title = "Developer Options",
       items = listOf(
+        Item(key = "DEVELOPMENT_SETTINGS", value = isDeveloperOptionsEnabled().toString()),
         Item(key = "DONT_KEEP_ACTIVITIES", value = isDontKeepActivitiesEnabled().toString()),
         Item(key = "USB_DEBUGGING", value = isUsbDebuggingEnabled().toString()),
         Item(key = "DEVICE_ROOTED", value = isDeviceRooted().toString()),
@@ -21,6 +22,21 @@ class DeveloperOptionsManager(private val context: Context) {
     )
 
     return developerOptions
+  }
+
+  fun isDeveloperOptionsEnabled(): Boolean {
+    return try {
+      val devModeEnabled =
+        Settings.Global.getInt(
+          context.contentResolver,
+          Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,
+          0
+        )
+      devModeEnabled == 1
+    } catch (e: Exception) {
+      e.printStackTrace()
+      false
+    }
   }
 
   // Verifica se a opção "Não manter atividades" está ativa
