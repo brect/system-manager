@@ -99,4 +99,18 @@ class DeveloperOptionsManager(private val context: Context) {
       false
     }
   }
+
+  fun calculateDeveloperOptionsImpact(): Double {
+    var impact = 0.0
+    if (isDontKeepActivitiesEnabled()) {
+      impact -= 20.0
+    }
+    if (isUsbDebuggingEnabled()) {
+      impact -= 10.0
+    }
+    if (isDeviceRooted()) {
+      impact -= 5.0
+    }
+    return impact
+  }
 }

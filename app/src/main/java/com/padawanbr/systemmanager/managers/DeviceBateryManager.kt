@@ -29,17 +29,6 @@ class DeviceBateryManager(val context: Context) {
 
   }
 
-  fun logBateryInfo() {
-    Log.i("DeviceBateryManager", "getBatteryHealth: ${getBatteryHealth()}\n")
-    Log.i("DeviceBateryManager", "getBatteryLevel: ${getBatteryLevel()}\n")
-    Log.i("DeviceBateryManager", "getBatteryStatus: ${getBatteryStatus()}\n")
-    Log.i("DeviceBateryManager", "getPowerSource: ${getPowerSource()}\n")
-    Log.i("DeviceBateryManager", "getBatteryTechnology: ${getBatteryTechnology()}\n")
-    Log.i("DeviceBateryManager", "getBatteryTemperature: ${getBatteryTemperature()}\n")
-    Log.i("DeviceBateryManager", "getBatteryVoltage: ${getBatteryVoltage()}\n")
-    Log.i("DeviceBateryManager", "getBatteryCapacity: ${getBatteryCapacity()}\n")
-  }
-
   fun getBatteryHealth(): String {
     val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     val health = intent?.getIntExtra(BatteryManager.EXTRA_HEALTH, -1) ?: -1
@@ -119,5 +108,22 @@ class DeviceBateryManager(val context: Context) {
       e.printStackTrace()
       0.0
     }
+  }
+
+  private fun getBatteryHealthScore(): Double {
+    return when (getBatteryHealth()) {
+      "Boa" -> 100.0
+      "Fria" -> 90.0
+      "Superaquecimento" -> 50.0
+      "Descarregada", "Falha", "Sobretensão" -> 30.0
+      else -> 70.0
+    }
+  }
+
+  fun calculateBatteryScore(): Double {
+    val batteryLevel = getBatteryLevel() // Em porcentagem
+    val batteryHealthScore = getBatteryHealthScore()
+    val score = (batteryLevel * 0.7) + (batteryHealthScore * 0.3)
+    return score.coerceIn(0.0, 100.0)
   }
 }

@@ -8,6 +8,10 @@ import android.util.Log
 import android.view.WindowManager
 import com.padawanbr.systemmanager.model.Item
 import com.padawanbr.systemmanager.model.Manager
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.io.RandomAccessFile
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -84,5 +88,64 @@ class DeviceInfoManager(private val context: Context) {
     val heightInches = heightPixels / ydpi
     val screenSizeInches = sqrt(widthInches.pow(2) + heightInches.pow(2))
     return screenSizeInches
+  }
+
+  fun calculateCpuScore(): Double {
+    val cpuUsage = getCurrentCpuUsage() // Em porcentagem (0.0 a 100.0)
+    val score = (100.0 - cpuUsage).coerceIn(0.0, 100.0)
+    return score
+  }
+
+  private fun getCurrentCpuUsage(): Double {
+    try {
+      val reader = RandomAccessFile("/proc/stat", "r")
+      val load1 = reader.readLine()
+      val toks1 = load1.split("\\s+".toRegex())
+      val idle1 = toks1[5].toLong()
+      val cpu1 = toks1.subList(2, 9).map { it.toLong() }.sum()
+
+      Thread.sleep(360)
+
+      reader.seek(0)
+      val load2 = reader.readLine()
+      reader.close()
+
+      val toks2 = load2.split("\\s+".toRegex())
+      val idle2 = toks2[5].toLong()
+      val cpu2 = toks2.subList(2, 9).map { it.toLong() }.sum()
+
+      val cpuDelta = cpu2 - cpu1
+      val idleDelta = idle2 - idle1
+
+      val usage = ((cpuDelta - idleDelta) * 100.0) / cpuDelta
+
+      return usage
+    } catch (ex: Exception) {
+      ex.printStackTrace()
+      return 0.0
+    }
+  }
+
+  private fun getMaxCpuFrequency(): Int {
+    var maxFreq = 0
+    try {
+      for (i in 0 until Runtime.getRuntime().availableProcessors()) {
+        val freqFile = File("/sys/devices/system/cpu/cpu$i/cpufreq/cpuinfo_max_freq")
+        if (freqFile.exists()) {
+          BufferedReader(FileReader(freqFile)).use { reader ->
+            val line = reader.readLine()
+            val freq = line.toIntOrNull() ?: 0
+            if (freq > maxFreq) {
+              maxFreq = freq
+            }
+          }
+        }
+      }
+      // Converter de KHz para MHz
+      return maxFreq / 1000
+    } catch (e: Exception) {
+      e.printStackTrace()
+      return 0
+    }
   }
 }

@@ -49,6 +49,24 @@ class MemoryManager(context: Context) {
     return memoryInfo
   }
 
+  fun calculateMemoryScore(): Double {
+    subscribe()
+    val totalMemoryMB = memoryInfo.totalMem / (1024 * 1024)
+    val availableMemoryMB = memoryInfo.availMem / (1024 * 1024)
+
+    val MIN_MEMORY_CAPABILITY = 2048.0 // 2GB
+    val MAX_MEMORY_CAPABILITY = 16384.0 // 16GB
+
+    val usedMemoryMB = totalMemoryMB - availableMemoryMB
+    val memoryUsagePercentage = (usedMemoryMB / totalMemoryMB) * 100
+
+    // Ajustar o score com base no uso de memória
+    val normalizedMemory = ((totalMemoryMB - MIN_MEMORY_CAPABILITY) / (MAX_MEMORY_CAPABILITY - MIN_MEMORY_CAPABILITY)) * 100
+    val adjustedScore = normalizedMemory - memoryUsagePercentage
+    val score = adjustedScore.coerceIn(0.0, 100.0)
+
+    return score
+  }
 
   private fun getAppMemoryInfo(): android.os.Debug.MemoryInfo {
     val pid = android.os.Process.myPid()

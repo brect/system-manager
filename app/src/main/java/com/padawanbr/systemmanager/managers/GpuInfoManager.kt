@@ -30,20 +30,22 @@ class GpuInfoManager {
     return gpuInfo
   }
 
-  fun logGpuInfo(): String {
-    val gpuVendor = getGpuVendor()
+  fun calculateGpuScore(): Double {
     val gpuRenderer = getGpuRenderer()
-    val scalingGovernor = getScalingGovernor()
-    val gpuLoad = getGpuLoad()
-
-    val gpuInfo = "GPU Vendor: $gpuVendor\n" +
-        "GPU Renderer: $gpuRenderer\n" +
-        "Scaling Governor: $scalingGovernor\n" +
-        "GPU Load: $gpuLoad\n"
-
-    Log.i("GpuInfoManager", "gpuInfo: $gpuInfo")
-
-    return gpuInfo
+    val gpuScores = mapOf(
+      "Adreno 730" to 100,
+      "Adreno 660" to 90,
+      "Mali-G78" to 85,
+      "Mali-G77" to 80,
+      "PowerVR GM9446" to 75,
+      "Unknown" to 50
+    )
+    for ((key, value) in gpuScores) {
+      if (gpuRenderer.contains(key)) {
+        return value.toDouble()
+      }
+    }
+    return 50.0 // Score padrão para GPUs desconhecidas
   }
 
   fun getGpuVendor(): String {

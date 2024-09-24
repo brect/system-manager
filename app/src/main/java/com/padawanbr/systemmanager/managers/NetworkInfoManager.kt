@@ -246,6 +246,16 @@ class NetworkInfoManager(private val context: Context) {
       else -> "Desconhecido"
     }
   }
+
+  fun calculateNetworkScore(): Double {
+    val networkType = getConnectionType()
+    return when (networkType) {
+      "Wi-Fi" -> 100.0
+      "Dados Móveis" -> 70.0
+      "Sem Conexão" -> 0.0
+      else -> 50.0
+    }
+  }
 }
 
 

@@ -17,11 +17,6 @@ class StorageInfoManager {
     val internalStorageTotal = getTotalInternalStorageSize()
     val internalStorageAvailable = getAvailableInternalStorageSize()
 
-//    val internalInfo = "Armazenamento Interno:\n" +
-//        "Sistema de Arquivos: $internalStorageType\n" +
-//        "Capacidade Total: ${formatSize(internalStorageTotal)}\n" +
-//        "Espaço Disponível: ${formatSize(internalStorageAvailable)}\n"
-
     val internalInfo = Manager(
       title = "Storage Info",
       items = listOf(
@@ -33,22 +28,6 @@ class StorageInfoManager {
     )
 
     return internalInfo
-  }
-
-  fun getExternalStorageInfo(): String {
-    val externalStorageType = getExternalStorageType()
-    val externalStorageTotal = getTotalExternalStorageSize()
-    val externalStorageAvailable = getAvailableExternalStorageSize()
-    val externalStorageStatus = getExternalStorageState()
-
-    val externalInfo = "Armazenamento Externo:\n" +
-        "Sistema de Arquivos: $externalStorageType\n" +
-        "Status: $externalStorageStatus\n" +
-        "Capacidade Total: ${formatSize(externalStorageTotal)}\n" +
-        "Espaço Disponível: ${formatSize(externalStorageAvailable)}\n"
-
-    Log.i("StorageInfoManager", externalInfo)
-    return externalInfo
   }
 
   private fun getStorageHardwareInfo(): String {
@@ -106,75 +85,6 @@ class StorageInfoManager {
     }
   }
 
-  private fun getExternalStorageType(): String {
-    try {
-      val mountsFile = File("/proc/mounts")
-      if (mountsFile.exists()) {
-        BufferedReader(FileReader(mountsFile)).use { reader ->
-          var line: String?
-          val externalPath = Environment.getExternalStorageDirectory().absolutePath
-          while (reader.readLine().also { line = it } != null) {
-            if (line!!.contains(" $externalPath ")) {
-              val tokens = line!!.split(" ")
-              if (tokens.size >= 3) {
-                val filesystemType = tokens[2]
-                return filesystemType
-              }
-            }
-          }
-        }
-      }
-      return "Desconhecido"
-    } catch (e: Exception) {
-      e.printStackTrace()
-      return "Erro ao obter o tipo de armazenamento"
-    }
-  }
-
-  private fun getExternalStorageState(): String {
-    return Environment.getExternalStorageState()
-  }
-
-  private fun isExternalStorageRemovable(): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-      Environment.isExternalStorageRemovable()
-    } else {
-      // Antes do API level 9, assume-se que é removível
-      true
-    }
-  }
-
-  private fun getTotalExternalStorageSize(): Long {
-    if (!isExternalStorageAvailable()) {
-      return 0L
-    }
-    val path = Environment.getExternalStorageDirectory()
-    val stat = StatFs(path.path)
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      stat.blockSizeLong * stat.blockCountLong
-    } else {
-      stat.blockSize.toLong() * stat.blockCount.toLong()
-    }
-  }
-
-  private fun getAvailableExternalStorageSize(): Long {
-    if (!isExternalStorageAvailable()) {
-      return 0L
-    }
-    val path = Environment.getExternalStorageDirectory()
-    val stat = StatFs(path.path)
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      stat.blockSizeLong * stat.availableBlocksLong
-    } else {
-      stat.blockSize.toLong() * stat.availableBlocks.toLong()
-    }
-  }
-
-  private fun isExternalStorageAvailable(): Boolean {
-    return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED ||
-        Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED_READ_ONLY
-  }
-
   private fun formatSize(size: Long): String {
     var sizeInBytes = size.toDouble()
     val units = arrayOf("B", "KB", "MB", "GB", "TB")
@@ -184,5 +94,13 @@ class StorageInfoManager {
       unitIndex++
     }
     return String.format("%.2f %s", sizeInBytes, units[unitIndex])
+  }
+
+  fun calculateStorageScore(): Double {
+    val totalInternalStorageGB = getTotalInternalStorageSize() / (1024.0 * 1024 * 1024)
+    val MAX_STORAGE_CAPABILITY = 256.0 // Exemplo: 256GB
+
+    val score = (totalInternalStorageGB / MAX_STORAGE_CAPABILITY) * 100
+    return score.coerceIn(0.0, 100.0)
   }
 }
