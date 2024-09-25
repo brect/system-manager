@@ -5,28 +5,32 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.util.Log
+import android.widget.Toast
 import com.padawanbr.systemmanager.model.Item
 import com.padawanbr.systemmanager.model.Manager
 
 class DeviceBateryManager(val context: Context) {
 
   fun bateryInfo(): Manager {
-    val bateryInfo = Manager(
-      title = "Battery Info",
+    val batteryInfo = Manager(
+      title = "Informações da Bateria",
       items = listOf(
         Item(key = "BATTERY_HEALTH", value = getBatteryHealth()),
-        Item(key = "BATTERY_LEVEL", value = "${getBatteryLevel()} %"),
+        Item(key = "BATTERY_LEVEL", value = "${getBatteryLevel()}%"),
         Item(key = "BATTERY_STATUS", value = getBatteryStatus()),
         Item(key = "POWER_SOURCE", value = getPowerSource()),
         Item(key = "BATTERY_TECHNOLOGY", value = getBatteryTechnology()),
-        Item(key = "BATTERY_TEMPERATURE", value = "${getBatteryTemperature()}°"),
-        Item(key = "BATTERY_VOLTAGE", value = getBatteryVoltage().toString()),
-        Item(key = "BATTERY_CAPACITY", value = getBatteryCapacity().toString()),
+        Item(key = "BATTERY_TEMPERATURE", value = "${getBatteryTemperature()}°C"),
+        Item(key = "BATTERY_TEMPERATURE_STATUS", value = getBatteryTemperatureStatus()),
+        Item(key = "BATTERY_TEMPERATURE_STATUS_PERCENT", value = "${getBatteryTemperatureScore()}%"),
+        Item(key = "BATTERY_VOLTAGE", value = "${getBatteryVoltage()} mV"),
+        Item(key = "BATTERY_CAPACITY", value = "${getBatteryCapacity()} mAh"),
       )
     )
 
-    return bateryInfo
+    checkBatteryTemperature()
 
+    return batteryInfo
   }
 
   fun getBatteryHealth(): String {
@@ -120,10 +124,42 @@ class DeviceBateryManager(val context: Context) {
     }
   }
 
+  fun getBatteryTemperatureStatus(): String {
+    val temperature = getBatteryTemperature() // Em graus Celsius
+    return when {
+      temperature < 30 -> "Ótima"
+      temperature < 35 -> "Boa"
+      temperature < 40 -> "Elevada"
+      else -> "Crítica"
+    }
+  }
+
+  private fun getBatteryTemperatureScore(): Double {
+    val temperature = getBatteryTemperature()
+    return when {
+      temperature < 30 -> 100.0
+      temperature < 35 -> 80.0
+      temperature < 40 -> 50.0
+      else -> 20.0
+    }
+  }
+
+  fun checkBatteryTemperature() {
+    val temperatureStatus = getBatteryTemperatureStatus()
+    if (temperatureStatus == "Elevada" || temperatureStatus == "Crítica") {
+      // Notificar o usuário
+      Log.i(
+        "BATTERY_TEMPERATURE_STATUS",
+        "A temperatura do dispositivo está $temperatureStatus. Considere fechar alguns aplicativos."
+      )
+    }
+  }
+
   fun calculateBatteryScore(): Double {
     val batteryLevel = getBatteryLevel() // Em porcentagem
     val batteryHealthScore = getBatteryHealthScore()
     val score = (batteryLevel * 0.7) + (batteryHealthScore * 0.3)
     return score.coerceIn(0.0, 100.0)
   }
+
 }
