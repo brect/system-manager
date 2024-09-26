@@ -15,26 +15,20 @@ class MemoryManager(val context: Context) {
 
   val memoryInfo by lazy { ActivityManager.MemoryInfo() }
 
-  fun subscribe() {
+  init {
     activityManager.getMemoryInfo(memoryInfo)
   }
 
-  fun memoryInfo(): Manager {
+  //Fornece informações sobre a memória total, disponível e usada do dispositivo.
+  fun mobileMemoryInfo(): Manager {
 
-    subscribe()
+//    activityManager.getMemoryInfo(memoryInfo)
 
     val totalMemory = memoryInfo.totalMem // Memória RAM total do dispositivo
     val availableMemory = memoryInfo.availMem // Memória RAM disponível
+    val usedMemory = totalMemory - availableMemory // Memória RAM utilizada
     val threshold = memoryInfo.threshold // Limite de uso de memória
     val lowMemory = memoryInfo.lowMemory // Indica se a memória RAM está baixa
-    val usedMemory = totalMemory - availableMemory // Memória RAM utilizada
-
-    val appMemoryInfo = getAppMemoryInfo() // Uso de memória do aplicativo
-
-    val appMemoryLimit = getAppMemoryLimit(context) // Limite de memória do aplicativo
-
-    val memoryUsagePercentage = checkAppMemoryUsage() // Uso de memória em porcentagem
-    val isCloseToLimit = isMemoryUsageCloseToLimit() // Verifica se está próximo do limite
 
     val items = mutableListOf<Item>()
 
@@ -45,13 +39,46 @@ class MemoryManager(val context: Context) {
     items.add(Item("THRESHOLD", "${formatBytesToMB(threshold)} MB"))
     items.add(Item("LOW_MEMORY", if (lowMemory) "Sim" else "Não"))
 
-    // Informações de memória do aplicativo
-    items.add(Item("APP_MEMORY_LIMIT", "$appMemoryLimit MB")) // Limite de memória do aplicativo
+    val memoryInfoManager = Manager(
+      title = "Info Device Memory",
+      items = items
+    )
+
+    return memoryInfoManager
+  }
+
+  //Fornece informações sobre a memória alocada para o aplicativo, incluindo limites e porcentagem de uso.
+  fun appMemoryInfo(): Manager {
+
+    val maxMemory = getMaximumMemory()
+    val memoryClass = getMemoryClass()
+
+    val memoryUsagePercentage = checkAppMemoryUsage() // Uso de memória em porcentagem
+    val isCloseToLimit = isMemoryUsageCloseToLimit() // Verifica se está próximo do limite
+
+    val items = mutableListOf<Item>()
+
+    items.add(Item("MAX_MEMORY", "${formatBytesToMB(maxMemory)} MB"))
+    items.add(Item("MEMORY_CLASS_LIMIT", "$memoryClass MB"))
 
     // Adicionar informações sobre o uso de memória em porcentagem
     items.add(Item("APP_MEMORY_USAGE_PERCENTAGE", "${"%.2f".format(memoryUsagePercentage)}%"))
     items.add(Item("APP_MEMORY_CLOSE_TO_LIMIT", if (isCloseToLimit) "Sim" else "Não"))
 
+    val memoryInfoManager = Manager(
+      title = "Info APP Memory",
+      items = items
+    )
+
+    return memoryInfoManager
+  }
+
+  //Fornece informações detalhadas sobre o uso de memória do aplicativo, como PSS, memória privada e compartilhada.
+  fun appMemoryOtherInfo(): Manager {
+
+    val items = mutableListOf<Item>()
+
+    val appMemoryInfo = getAppMemoryUsage() // Uso de memória do aplicativo
     // Uso de memória do aplicativo (PSS)
     items.add(Item("APP_TOTAL_PSS", "${formatKBToMB(appMemoryInfo.totalPss.toLong())} MB"))
     items.add(Item("APP_DALVIK_PSS", "${formatKBToMB(appMemoryInfo.dalvikPss.toLong())} MB"))
@@ -59,21 +86,76 @@ class MemoryManager(val context: Context) {
     items.add(Item("APP_OTHER_PSS", "${formatKBToMB(appMemoryInfo.otherPss.toLong())} MB"))
 
     // Uso de memória do aplicativo (Private Dirty)
-    items.add(Item("APP_TOTAL_PRIVATE_DIRTY", "${formatKBToMB(appMemoryInfo.totalPrivateDirty.toLong())} MB"))
-    items.add(Item("APP_DALVIK_PRIVATE_DIRTY", "${formatKBToMB(appMemoryInfo.dalvikPrivateDirty.toLong())} MB"))
-    items.add(Item("APP_NATIVE_PRIVATE_DIRTY", "${formatKBToMB(appMemoryInfo.nativePrivateDirty.toLong())} MB"))
-    items.add(Item("APP_OTHER_PRIVATE_DIRTY", "${formatKBToMB(appMemoryInfo.otherPrivateDirty.toLong())} MB"))
+    items.add(
+      Item(
+        "APP_TOTAL_PRIVATE_DIRTY",
+        "${formatKBToMB(appMemoryInfo.totalPrivateDirty.toLong())} MB"
+      )
+    )
+    items.add(
+      Item(
+        "APP_DALVIK_PRIVATE_DIRTY",
+        "${formatKBToMB(appMemoryInfo.dalvikPrivateDirty.toLong())} MB"
+      )
+    )
+    items.add(
+      Item(
+        "APP_NATIVE_PRIVATE_DIRTY",
+        "${formatKBToMB(appMemoryInfo.nativePrivateDirty.toLong())} MB"
+      )
+    )
+    items.add(
+      Item(
+        "APP_OTHER_PRIVATE_DIRTY",
+        "${formatKBToMB(appMemoryInfo.otherPrivateDirty.toLong())} MB"
+      )
+    )
 
     // Uso de memória do aplicativo (Shared Dirty)
-    items.add(Item("APP_TOTAL_SHARED_DIRTY", "${formatKBToMB(appMemoryInfo.totalSharedDirty.toLong())} MB"))
-    items.add(Item("APP_DALVIK_SHARED_DIRTY", "${formatKBToMB(appMemoryInfo.dalvikSharedDirty.toLong())} MB"))
-    items.add(Item("APP_NATIVE_SHARED_DIRTY", "${formatKBToMB(appMemoryInfo.nativeSharedDirty.toLong())} MB"))
-    items.add(Item("APP_OTHER_SHARED_DIRTY", "${formatKBToMB(appMemoryInfo.otherSharedDirty.toLong())} MB"))
+    items.add(
+      Item(
+        "APP_TOTAL_SHARED_DIRTY",
+        "${formatKBToMB(appMemoryInfo.totalSharedDirty.toLong())} MB"
+      )
+    )
+    items.add(
+      Item(
+        "APP_DALVIK_SHARED_DIRTY",
+        "${formatKBToMB(appMemoryInfo.dalvikSharedDirty.toLong())} MB"
+      )
+    )
+    items.add(
+      Item(
+        "APP_NATIVE_SHARED_DIRTY",
+        "${formatKBToMB(appMemoryInfo.nativeSharedDirty.toLong())} MB"
+      )
+    )
+    items.add(
+      Item(
+        "APP_OTHER_SHARED_DIRTY",
+        "${formatKBToMB(appMemoryInfo.otherSharedDirty.toLong())} MB"
+      )
+    )
 
     // Informações adicionais disponíveis a partir do API level 19 (KITKAT)
-    items.add(Item("APP_TOTAL_PRIVATE_CLEAN", "${formatKBToMB(appMemoryInfo.totalPrivateClean.toLong())} MB"))
-    items.add(Item("APP_TOTAL_SHARED_CLEAN", "${formatKBToMB(appMemoryInfo.totalSharedClean.toLong())} MB"))
-    items.add(Item("APP_TOTAL_SWAPPABLE_PSS", "${formatKBToMB(appMemoryInfo.totalSwappablePss.toLong())} MB"))
+    items.add(
+      Item(
+        "APP_TOTAL_PRIVATE_CLEAN",
+        "${formatKBToMB(appMemoryInfo.totalPrivateClean.toLong())} MB"
+      )
+    )
+    items.add(
+      Item(
+        "APP_TOTAL_SHARED_CLEAN",
+        "${formatKBToMB(appMemoryInfo.totalSharedClean.toLong())} MB"
+      )
+    )
+    items.add(
+      Item(
+        "APP_TOTAL_SWAPPABLE_PSS",
+        "${formatKBToMB(appMemoryInfo.totalSwappablePss.toLong())} MB"
+      )
+    )
 
     // Estatísticas de memória (a partir do API level 23)
     val memoryStats = appMemoryInfo.memoryStats
@@ -82,72 +164,52 @@ class MemoryManager(val context: Context) {
     }
 
     val memoryInfoManager = Manager(
-      title = "Informações de Memória",
+      title = "Info Other App Memory",
       items = items
     )
 
     return memoryInfoManager
   }
 
-  fun calculateMemoryScore(): Double {
-    subscribe()
-    val totalMemoryMB = memoryInfo.totalMem / (1024 * 1024)
-    val availableMemoryMB = memoryInfo.availMem / (1024 * 1024)
-
-    val MIN_MEMORY_CAPABILITY = 2048.0 // 2GB
-    val MAX_MEMORY_CAPABILITY = 16384.0 // 16GB
-
-    val usedMemoryMB = totalMemoryMB - availableMemoryMB
-    val memoryUsagePercentage = (usedMemoryMB / totalMemoryMB) * 100
-
-    // Ajustar o score com base no uso de memória
-    val normalizedMemory =
-      ((totalMemoryMB - MIN_MEMORY_CAPABILITY) / (MAX_MEMORY_CAPABILITY - MIN_MEMORY_CAPABILITY)) * 100
-    val adjustedScore = normalizedMemory - memoryUsagePercentage
-    val score = adjustedScore.coerceIn(0.0, 100.0)
-
-    return score
-  }
-
+  //obtêm informações de memória do aplicativo.
   private fun getAppMemoryInfo(): Debug.MemoryInfo {
     val pid = android.os.Process.myPid()
     val memoryInfos = activityManager.getProcessMemoryInfo(intArrayOf(pid))
     return memoryInfos[0]
   }
 
+  //obtêm informações de memória do aplicativo.
   fun getAppMemoryUsage(): Debug.MemoryInfo {
     val memoryInfo = Debug.MemoryInfo()
     Debug.getMemoryInfo(memoryInfo)
     return memoryInfo
   }
 
-  fun getAppMemoryLimit(context: Context): Int {
-    val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-    val memoryClass = activityManager.memoryClass // em MB
-    return memoryClass
+  // Retorna o máximo de memória que o aplicativo pode usar, conforme definido pela JVM.
+  fun getMaximumMemory(): Long {
+    val rt = Runtime.getRuntime()
+    return rt.maxMemory()
   }
 
-  fun isMemoryUsageCloseToLimit(): Boolean {
-    val memoryInfo = getAppMemoryUsage()
-    val totalPssKB = memoryInfo.totalPss.toDouble()
-    val totalPssMB = totalPssKB / 1024.0 // Converter para MB
-
-    val memoryLimitMB = getAppMemoryLimit(context).toDouble()
-
-    // Defina um threshold, por exemplo, 80% do limite de memória
-    val threshold = memoryLimitMB * 0.8
-
-    return totalPssMB >= threshold
+  // Retorna o limite de heap em megabytes definido pelo sistema para o aplicativo.
+  fun getMemoryClass(): Int {
+    return activityManager.memoryClass
   }
 
   fun checkAppMemoryUsage(): Double {
     val memoryInfo = getAppMemoryUsage()
-    val totalPssKB = memoryInfo.totalPss.toDouble() //Total de memória PSS utilizada pelo aplicativo em kilobytes.
-    val totalPssMB = totalPssKB / 1024.0 //Converte o valor para megabytes dividindo por 1024.
 
-    val memoryLimitMB = getAppMemoryLimit(context).toDouble() //Retorna o limite de memória imposto pelo sistema ao aplicativo, em megabytes.
+    //Total de memória PSS utilizada pelo aplicativo em kilobytes.
+    val totalPssKB = memoryInfo.totalPss.toDouble()
 
-    val usagePercentage = (totalPssMB / memoryLimitMB) * 100 //Calcula a porcentagem de memória usada pelo aplicativo em relação ao limite.
+    //Converte o valor para megabytes dividindo por 1024.
+    val totalPssMB = totalPssKB / 1024.0
+
+    //Retorna o limite de memória imposto pelo sistema ao aplicativo, em megabytes.
+    val memoryLimitMB = getMemoryClass().toDouble()
+
+    //Calcula a porcentagem de memória usada pelo aplicativo em relação ao limite.
+    val usagePercentage = (totalPssMB / memoryLimitMB) * 100
 
     Log.i(
       "AppMemoryUsage",
@@ -163,23 +225,33 @@ class MemoryManager(val context: Context) {
     return usagePercentage
   }
 
+
+  fun isMemoryUsageCloseToLimit(): Boolean {
+    val memoryInfo = getAppMemoryUsage()
+    val totalPssKB = memoryInfo.totalPss.toDouble()
+    val totalPssMB = totalPssKB / 1024.0 // Converter para MB
+
+    val memoryLimitMB = getMemoryClass().toDouble()
+
+    // Defina um threshold, por exemplo, 70% do limite de memória
+    val threshold = memoryLimitMB * 0.70
+
+    return totalPssMB >= threshold
+  }
+
+  private fun formatKBToMB(kb: Number): String {
+    val mb = kb.toDouble() / 1024
+    return "%.2f".format(mb)
+  }
+
+
   private fun formatBytesToMB(bytes: Long): String {
     val mb = bytes.toDouble() / (1024 * 1024)
     return "%.2f".format(mb)
   }
 
   private fun formatKBToMB(kb: Int): String {
-    val mb = kb.toDouble() / 1024
-    return "%.2f".format(mb)
-  }
-
-  private fun formatKBToMB(kb: Double): String {
-    val mb = kb / 1024
-    return "%.2f".format(mb)
-  }
-
-  private fun formatKBToMB(kb: Long): String {
-    val mb = kb.toDouble() / 1024
+    val mb = kb.toDouble() / 1024.0
     return "%.2f".format(mb)
   }
 

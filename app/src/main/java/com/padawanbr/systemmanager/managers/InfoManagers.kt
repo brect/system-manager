@@ -14,7 +14,9 @@ class InfoManagers(context: Context) {
   val managers = listOf(
     deviceInfoManager.deviceInfo(),
     deviceInfoManager.screenInfo(),
-    memoryManager.memoryInfo(),
+    memoryManager.mobileMemoryInfo(),
+    memoryManager.appMemoryInfo(),
+    memoryManager.appMemoryOtherInfo(),
     deviceBateryManager.bateryInfo(),
     gpuInfoManager.gpuInfo(),
     storageInfoManager.getInternalStorageInfo(),

@@ -16,7 +16,7 @@ class PerformanceManager(val context: Context) {
 
   fun calculateOverallScore(): Double {
     val cpuScore = deviceInfoManager.calculateCpuScore()
-    val memoryScore = memoryManager.calculateMemoryScore()
+    val memoryScore =0// memoryManager.calculateMemoryScore()
     val gpuScore = gpuInfoManager.calculateGpuScore()
     val batteryScore = deviceBatteryManager.calculateBatteryScore()
     val storageScore = storageInfoManager.calculateStorageScore()
