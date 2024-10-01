@@ -25,6 +25,7 @@ class DeviceBateryManager(val context: Context) {
         Item(key = "BATTERY_TEMPERATURE_STATUS_PERCENT", value = "${getBatteryTemperatureScore()}%"),
         Item(key = "BATTERY_VOLTAGE", value = "${getBatteryVoltage()} mV"),
         Item(key = "BATTERY_CAPACITY", value = "${getBatteryCapacity()} mAh"),
+        Item(key = "BATTERY_SCORE", value = "${calculateBatteryScore()} mAh"),
       )
     )
 
