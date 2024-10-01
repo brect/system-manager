@@ -1,5 +1,3 @@
-
-
 ##  Informações sobre a memória alocada para o aplicativo, incluindo limites e porcentagem de uso.
 
 #### 1. MAX_MEMORY:
