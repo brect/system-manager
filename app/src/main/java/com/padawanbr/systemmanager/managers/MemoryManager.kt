@@ -50,20 +50,23 @@ class MemoryManager(val context: Context) {
   //Fornece informações sobre a memória alocada para o aplicativo, incluindo limites e porcentagem de uso.
   fun appMemoryInfo(): Manager {
 
-    val maxMemory = getMaximumMemory()
-    val memoryClass = getMemoryClass()
-
-    val memoryUsagePercentage = checkAppMemoryUsage() // Uso de memória em porcentagem
-    val isCloseToLimit = isMemoryUsageCloseToLimit() // Verifica se está próximo do limite
+    val appMemoryInfo = getAppMemoryUsage() // Uso de memória do aplicativo
 
     val items = mutableListOf<Item>()
 
-    items.add(Item("MAX_MEMORY", "${formatBytesToMB(maxMemory)} MB"))
-    items.add(Item("MEMORY_CLASS_LIMIT", "$memoryClass MB"))
+    items.add(Item("MAX_MEMORY", "${formatBytesToMB(getMaximumMemory())} MB"))
+    items.add(Item("MEMORY_CLASS_LIMIT", "${getMemoryClass()} MB"))
+    items.add(Item("LARGE_MEMORY_CLASS_LIMIT", "${getLargeMemoryClass()} MB"))
 
     // Adicionar informações sobre o uso de memória em porcentagem
-    items.add(Item("APP_MEMORY_USAGE_PERCENTAGE", "${"%.2f".format(memoryUsagePercentage)}%"))
-    items.add(Item("APP_MEMORY_CLOSE_TO_LIMIT", if (isCloseToLimit) "Sim" else "Não"))
+    items.add(Item("APP_MEMORY_USAGE_PERCENTAGE", "${"%.2f".format(checkAppMemoryUsage())}%"))
+    items.add(Item("APP_MEMORY_CLOSE_TO_LIMIT", if (isMemoryUsageCloseToLimit()) "Sim" else "Não"))
+
+    // Uso de memória do aplicativo (PSS)
+    items.add(Item("APP_TOTAL_PSS", "${formatKBToMB(appMemoryInfo.totalPss.toLong())} MB"))
+    items.add(Item("APP_DALVIK_PSS", "${formatKBToMB(appMemoryInfo.dalvikPss.toLong())} MB"))
+    items.add(Item("APP_NATIVE_PSS", "${formatKBToMB(appMemoryInfo.nativePss.toLong())} MB"))
+    items.add(Item("APP_OTHER_PSS", "${formatKBToMB(appMemoryInfo.otherPss.toLong())} MB"))
 
     val memoryInfoManager = Manager(
       title = "Info APP Memory",
@@ -79,11 +82,6 @@ class MemoryManager(val context: Context) {
     val items = mutableListOf<Item>()
 
     val appMemoryInfo = getAppMemoryUsage() // Uso de memória do aplicativo
-    // Uso de memória do aplicativo (PSS)
-    items.add(Item("APP_TOTAL_PSS", "${formatKBToMB(appMemoryInfo.totalPss.toLong())} MB"))
-    items.add(Item("APP_DALVIK_PSS", "${formatKBToMB(appMemoryInfo.dalvikPss.toLong())} MB"))
-    items.add(Item("APP_NATIVE_PSS", "${formatKBToMB(appMemoryInfo.nativePss.toLong())} MB"))
-    items.add(Item("APP_OTHER_PSS", "${formatKBToMB(appMemoryInfo.otherPss.toLong())} MB"))
 
     // Uso de memória do aplicativo (Private Dirty)
     items.add(
@@ -196,6 +194,12 @@ class MemoryManager(val context: Context) {
     return activityManager.memoryClass
   }
 
+  // Retorna o limite de memória para aplicativos que solicitam o modo de memória grande.
+  fun getLargeMemoryClass(): Int {
+    return activityManager.largeMemoryClass
+  }
+
+  // Uso de memória em porcentagem
   fun checkAppMemoryUsage(): Double {
     val memoryInfo = getAppMemoryUsage()
 
@@ -225,7 +229,7 @@ class MemoryManager(val context: Context) {
     return usagePercentage
   }
 
-
+  // Verifica se está próximo do limite
   fun isMemoryUsageCloseToLimit(): Boolean {
     val memoryInfo = getAppMemoryUsage()
     val totalPssKB = memoryInfo.totalPss.toDouble()
