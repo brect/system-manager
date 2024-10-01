@@ -21,10 +21,10 @@ class GpuInfoManager {
     val gpuInfo = Manager(
       title = "GPU Info",
       items = listOf(
-        Item(key = "GPU Vendor", value = getGpuVendor()),
-        Item(key = "GPU Renderer", value = getGpuRenderer()),
-        Item(key = "GPU Load", value = getGpuLoad()),
-        Item(key = "ScalingGovernor", value = getScalingGovernor()),
+        Item(key = "GPU_VENDOR", value = getGpuVendor()),
+        Item(key = "GPU_RENDERER", value = getGpuRenderer()),
+        Item(key = "GPU_LOAD", value = getGpuLoad()),
+        Item(key = "SCALING_GOVERNOR", value = getScalingGovernor()),
       )
     )
     return gpuInfo
